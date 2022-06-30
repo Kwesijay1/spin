@@ -1,0 +1,59 @@
+.counters{
+    list-style-type: none;
+}
+.counters .counter-content{
+    display: block;
+    text-align: center;
+    color: #fff;
+}
+.counters .counter-content i{
+    font-size: 36px;
+}
+.counters .counter-content h3{
+    font-size: 32px;
+    margin: 10px 0;
+    color: #fff;
+    font-weight: 700;
+}
+.counters .counter-content h4{
+    font-size: 14px;
+    margin: 0;
+}
+.aboutSectionText::first-letter{
+    color: var(--v-primary-base);
+    padding: 0 .3rem;
+    margin: 0 .3rem 0 0;
+    border: 2px solid;
+    border-radius: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 4rem;
+    float: left;
+    line-height: 1;
+}
+.card-npp{
+    background-color: var(--v-primary-base);
+    color: white;
+}
+.card-npp-small{
+    background-color: var(--v-red-base);
+    min-height: 5px !important;
+    height: 5px !important;
+}
+
+/* v-vpshow classes */
+.before-enter {
+    opacity: 0;
+}
+
+.enter {
+    transition: opacity 5s ease;
+    animation: bounce; /* referring directly to the animation's @keyframe declaration */
+    animation-duration: 2s; /* don't forget to set a duration! */
+}
+
+.ernest {
+    color: red;
+    padding: 100px;
+
+}
+/* ---------------- */
