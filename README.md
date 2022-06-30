@@ -73,5 +73,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 Set the database in the .env file and create a database with the same name
 
 ## Run the following commands
+- composer install
+- yarn install
+- yarn run dev
 - php artisan migrate
 - php artisan serve
