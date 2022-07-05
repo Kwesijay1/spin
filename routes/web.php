@@ -20,5 +20,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::post('/discount-generator/check-discount', [App\Http\Controllers\DiscountGenerator::class, 'store'])->name('check-discount');
+Route::post('/discount-generator/store', [App\Http\Controllers\DiscountGenerator::class, 'store'])->name('generator.store');
+Route::post('/discount-generator/check-discount', [App\Http\Controllers\DiscountGenerator::class, 'ConfirmUserCanSpin'])->name('check-discount');
 

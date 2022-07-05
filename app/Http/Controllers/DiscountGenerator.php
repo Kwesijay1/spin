@@ -42,39 +42,18 @@ class DiscountGenerator extends Controller
             'name' => 'required',
             'email' => 'required|email',
             'phone_number' => 'required',
+            'discount_amount' => 'required',
         ]);
         try {
             DB::beginTransaction();
-            if($this->checkIfCanSpin($request->email, $request->phone_number) <= 0){
-                //user qualifies to spin
-                $dayNumber = Carbon::today()->dayOfWeekIso;
-                $lastTwoDigits = (int)substr($request->phone_number, -2);
-                if(($dayNumber %2 === 0) === ($lastTwoDigits %2 === 0)){
-                    //won
-                    $discountValue = random_int(10, 50);
-                    Discount::create([
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'phone_number' => $request->phone_number,
-                        'discount_amount' => $discountValue
-                    ]);
-                    DB::commit();
-                    return response()->json(['alertType' => 'success', 'message' => 'Congratulations! You have won a discount of '. $discountValue.'%. Kindly contact us for your voucher. Thank You!']);
-                } else{
-                    Discount::create([
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'phone_number' => $request->phone_number,
-                        'discount_amount' => 0
-                    ]);
-                    DB::commit();
-                    return response()->json(['alertType' => 'info', 'message' => 'Sorry! You do not qualify for a discount today, Kindly try again tomorrow. Thank You!']);
-                }
-
-            } else{
-                //user has spin already today
-                return response()->json(['alertType' => 'warning', 'message' => 'Sorry! You have already spin for today, Kindly try again tomorrow. Thank You!']);
-            }
+            Discount::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'discount_amount' => $request->discount_amount
+            ]);
+            DB::commit();
+            return response()->json(['alertType' => 'success', 'message' => 'Congratulations! You have won a discount of '. $request->discount_amount.'%. Kindly contact us for your voucher. Thank You!']);
         } catch (Exception $exception){
             DB::rollBack();
             return response()->json(['alertType' => 'error', 'message' => 'Sorry! Something went wrong, Please try again later.']);
@@ -126,11 +105,39 @@ class DiscountGenerator extends Controller
         //
     }
 
+    public function ConfirmUserCanSpin(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email',
+            'phone_number' => 'required',
+        ]);
+        try {
+            if($this->checkIfCanSpin($request->email, $request->phone_number) <= 0){
+                //user qualifies to spin
+                $dayNumber = Carbon::today()->dayOfWeekIso;
+                $lastTwoDigits = (int)substr($request->phone_number, -2);
+                if(($dayNumber %2 === 0) === ($lastTwoDigits %2 === 0)){
+                    //won
+                    return response()->json(['alertType' => 'success', 'message' => 'User can spin ', 'canSpin' => 'true']);
+                } else{
+                    return response()->json(['alertType' => 'info', 'message' => 'Sorry! You do not qualify for a discount today, Kindly try again tomorrow. Thank You!', 'canSpin' => 'false']);
+                }
+
+            } else{
+                //user has spin already today
+                return response()->json(['alertType' => 'warning', 'message' => 'Sorry! You have already spin for today, Kindly try again tomorrow. Thank You!', 'canSpin' => 'false']);
+            }
+        } catch (Exception $exception){
+            return response()->json(['alertType' => 'error', 'message' => 'Sorry! Something went wrong, Please try again later.']);
+        }
+    }
+
     /**
      * check if user has spin already today
     */
     public function checkIfCanSpin($email, $phone_number){
-        return Discount::whereRaw("DATE_FORMAT(created_at, '%Y-%m-%d') = ?", Carbon::today()->format('Y-m-d'))->where(function ($query) use($email, $phone_number){
+        return Discount::whereDate('created_at', Carbon::today())->where(function ($query) use($email, $phone_number){
             $query->where('email', $email)->orWhere('phone_number', $phone_number);
         })->count();
     }

@@ -3,16 +3,17 @@
     <v-btn @click="spinForDiscount" color="primary" class="btn-primary rounded-3">spin for discount</v-btn>
     <v-dialog
         v-model="spinForDiscountDialog"
-        max-width="600px"
+        max-width="600"
         persistent
     >
-        <v-card>
+        <v-card class="p-12">
+            <v-card-title class="mb-2 d-flex justify-content-center text-center text-primary">
+                Spin For Discount
+            </v-card-title>
+            <v-divider></v-divider>
             <v-form @submit.prevent="checkDiscount" ref="donationForm" v-model="valid">
-                <v-card-title class="mb-2 d-flex justify-content-center text-center text-primary">
-                    Spin For Discount
-                </v-card-title>
-                <v-divider></v-divider>
 
+            <v-card-text>
                 <v-row class="pa-0 m-0">
                     <v-col cols="12" md="12">
                         <v-text-field
@@ -48,31 +49,77 @@
                         ></v-text-field>
                     </v-col>
                 </v-row>
-
-
-                <!-- save and close buttons -->
-                <v-col cols="12" class="text-right my-0 pt-5 pb-4">
-                    <v-btn
-                        depressed
-                        color="error"
-                        class="mr-2"
-                        @click="cancelSpin"
-                        aria-label="Cancel"
-                        text
-                    >
-                        Cancel
-                    </v-btn>
-                    <v-btn
-                        class="createBtn"
-                        color="info"
-                        depressed
-                        aria-label="Submit"
-                        type="submit"
-                    >
-                        Spin
-                    </v-btn>
-                </v-col>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+                <v-row>
+                    <!-- save and close buttons -->
+                    <v-col cols="12" class="text-right my-0 pt-5 pb-4">
+                        <v-btn
+                            depressed
+                            color="error"
+                            class="mr-2"
+                            @click="cancelSpin"
+                            aria-label="Cancel"
+                            text
+                        >
+                            Cancel
+                        </v-btn>
+                        <v-btn
+                            class="createBtn"
+                            color="info"
+                            depressed
+                            aria-label="Submit"
+                            type="submit"
+                        >
+                            Spin
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-card-actions>
             </v-form>
+        </v-card>
+    </v-dialog>
+    <v-dialog
+        v-model="spinnerComDialog"
+        max-width="600"
+        persistent
+    >
+        <v-card >
+            <v-card-title class="mb-2 d-flex justify-content-center text-center text-primary">
+                Spinner
+            </v-card-title>
+            <v-divider></v-divider>
+
+
+            <v-card-text>
+                <v-row class="pa-0 m-0 justify-content-center d-flex">
+                    <v-col cols="12 pa-0 m-0" >
+                        <!-- type: canvas -->
+                        <FortuneWheel
+                            style="width: 90%"
+                            :canvas="canvasOptions"
+                            :prizes="prizes"
+                            :verify="canvasVerify"
+                            @rotateStart="onCanvasRotateStart"
+                            @rotateEnd="onRotateEnd"
+                        />
+                    </v-col>
+                </v-row>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions class="w-100 d-flex justify-content-end text-right my-0 pt-5 pb-4">
+                <v-btn
+                    depressed
+                    color="error"
+                    class="mr-2"
+                    @click="closeSpin"
+                    aria-label="Cancel"
+                >
+                    Cancel
+                </v-btn>
+            </v-card-actions>
+
         </v-card>
     </v-dialog>
     <v-dialog
@@ -112,27 +159,89 @@
         </div>
     </v-dialog>
 
+
+
+
 </div>
 </template>
 
 <script>
 import validation from "../services/validation";
+import FortuneWheel from 'vue-fortune-wheel'
+import 'vue-fortune-wheel/lib/vue-fortune-wheel.css'
 export default {
     name: "DiscountComponent",
+    components: {
+        FortuneWheel
+    },
     data(){
         return{
             ...validation,
             valid: false,
+            spinnerComDialog: false,
             spinForDiscountDialog: false,
             spinnerDialog: false,
             showAlert: false,
             spinForm: new Form({
                 name: '',
                 email: '',
-                phone_number: ''
+                phone_number: '',
+                discount_amount: 0
             }),
             alertType: 'success',
-            alertMessage: 'Nunc nonummy metus. Nunc interdum lacus sit amet orci.',
+            alertMessage: '',
+            canvasVerify: true, // Whether the turntable in canvas mode is enabled for verification
+            canvasOptions: {
+                borderWidth: 6,
+                borderColor: '#584b43'
+            },
+            prizes: [
+                {
+                    id: 1, //* The unique id of each prize, an integer greater than 0
+                    name: '10%', // Prize name, display value when type is canvas (this parameter is not needed when type is image)
+                    value: 10, //* Prize value, return value after spinning
+                    bgColor: '#45ace9', // Background color (no need for this parameter when type is image)
+                    color: '#ffffff', // Font color (this parameter is not required when type is image)
+                    probability: 20, //* Probability, up to 4 decimal places (the sum of the probabilities of all prizes
+                    weight: 1 // Weight, if useWeight is true, the probability is calculated by weight (weight must be an integer), so probability is invalid
+                },
+                {
+                    id: 2,
+                    name: '20%',
+                    value: 20,
+                    bgColor: '#dd3832',
+                    color: '#ffffff',
+                    probability: 20,
+                    weight: 1
+                },
+                {
+                    id: 3,
+                    name: '30%',
+                    value: 30,
+                    bgColor: '#fef151',
+                    color: '#ffffff',
+                    probability: 20,
+                    weight: 1
+                },
+                {
+                    id: 4,
+                    name: '40%',
+                    value: 40,
+                    bgColor: '#b0fe51',
+                    color: '#ffffff',
+                    probability: 20,
+                    weight: 1
+                },
+                {
+                    id: 5,
+                    name: '50%',
+                    value: 50,
+                    bgColor: '#de51fe',
+                    color: '#ffffff',
+                    probability: 20,
+                    weight: 1
+                },
+            ]
         }
     },
     methods:{
@@ -143,6 +252,11 @@ export default {
             this.spinForm.reset()
             this.$refs.donationForm.reset()
             this.spinForDiscountDialog = false
+        },
+        closeSpin(){
+            this.spinForm.reset()
+            this.$refs.donationForm.reset()
+            this.spinnerComDialog = false
         },
         closeAlert(){
             this.showAlert = false
@@ -157,15 +271,68 @@ export default {
             setTimeout(() => {
                 axios.post('/discount-generator/check-discount', this.spinForm)
                     .then((response) => {
-                        this.alertType = response.data.alertType
-                        this.alertMessage = response.data.message
+                        if(response.data.canSpin === 'true'){
+                            //User qualifies to Spin
+                            this.spinnerDialog = false
+                            this.spinnerComDialog = true
+                        } else {
+                            this.alertType = response.data.alertType
+                            this.alertMessage = response.data.message
+                            this.spinnerDialog = false
+                            this.showAlert = true
+                        }
+                    })
+                    .catch((error) => {
+                        this.alertType = 'error'
+                        this.alertMessage = error.response.data.message
                         this.spinnerDialog = false
                         this.showAlert = true
                     })
-                    .catch(() => {})
                 this.spinnerDialog = false
-            }, 5000)
-        }
+            }, 3000)
+        },
+        DoServiceVerify(verified, duration) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(verified)
+                }, duration)
+            })
+        },
+        onRotateEnd(prize) {
+            this.spinForm.discount_amount = prize.value
+
+            axios.post('/discount-generator/store', this.spinForm)
+                .then((response) => {
+                    this.closeSpin()
+                    this.alertType = response.data.alertType
+                    this.alertMessage = response.data.message
+                    this.showAlert = true
+                })
+                .catch((error) => {
+                    this.closeSpin()
+                    this.alertType = 'error'
+                    this.alertMessage = error.response.data.message
+                    this.showAlert = true
+                })
+        },
+        onCanvasRotateStart(rotate) {
+            if (this.canvasVerify) {
+                const verified = true // true: the test passed the verification, false: the test failed the verification
+                this.DoServiceVerify(verified, 2000).then((verifiedRes) => {
+                    if (verifiedRes) {
+                        console.log('Verification passed, start to rotate')
+                        rotate() // Call the callback, start spinning
+                        this.canvasVerify = false // Turn off verification mode
+                    } else {
+                        this.alertType = 'error'
+                        this.alertMessage = 'Failed verification'
+                        this.showAlert = true
+                    }
+                })
+                return
+            }
+            console.log('onCanvasRotateStart')
+        },
     }
 }
 </script>
