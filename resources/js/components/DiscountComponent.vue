@@ -316,6 +316,9 @@ export default {
                 })
         },
         onCanvasRotateStart(rotate) {
+            rotate() // Call the callback, start spinning
+        },
+        /*onCanvasRotateStart(rotate) {
             if (this.canvasVerify) {
                 const verified = true // true: the test passed the verification, false: the test failed the verification
                 this.DoServiceVerify(verified, 2000).then((verifiedRes) => {
@@ -332,7 +335,7 @@ export default {
                 return
             }
             console.log('onCanvasRotateStart')
-        },
+        },*/
     }
 }
 </script>
