@@ -50,32 +50,26 @@
                     </v-col>
                 </v-row>
             </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-                <v-row>
-                    <!-- save and close buttons -->
-                    <v-col cols="12" class="text-right my-0 pt-5 pb-4">
-                        <v-btn
-                            depressed
-                            color="error"
-                            class="mr-2"
-                            @click="cancelSpin"
-                            aria-label="Cancel"
-                            text
-                        >
-                            Cancel
-                        </v-btn>
-                        <v-btn
-                            class="createBtn"
-                            color="info"
-                            depressed
-                            aria-label="Submit"
-                            type="submit"
-                        >
-                            Spin
-                        </v-btn>
-                    </v-col>
-                </v-row>
+            <v-card-actions class="d-flex justify-content-end">
+                <v-btn
+                    depressed
+                    color="error"
+                    class="mr-2"
+                    @click="cancelSpin"
+                    aria-label="Cancel"
+                    text
+                >
+                    Cancel
+                </v-btn>
+                <v-btn
+                    class="createBtn"
+                    color="info"
+                    depressed
+                    aria-label="Submit"
+                    type="submit"
+                >
+                    Spin
+                </v-btn>
             </v-card-actions>
             </v-form>
         </v-card>
@@ -99,7 +93,7 @@
                         <FortuneWheel
                             style="width: 90%"
                             :canvas="canvasOptions"
-                            :prizes="prizes"
+                            :prizes="discountPrices"
                             :verify="canvasVerify"
                             @rotateStart="onCanvasRotateStart"
                             @rotateEnd="onRotateEnd"
@@ -241,11 +235,13 @@ export default {
                     probability: 20,
                     weight: 1
                 },
-            ]
+            ],
+            discountPrices: []
         }
     },
     methods:{
         spinForDiscount(){
+            scrollTo(0, 0)
             this.spinForDiscountDialog = true
         },
         cancelSpin(){
@@ -336,6 +332,95 @@ export default {
             }
             console.log('onCanvasRotateStart')
         },*/
+
+        getDiscountPrices(){
+            this.discountPrices = []
+            axios.get('/get-discount-list')
+                .then((response) => {
+                    if(response.data.length > 0){
+                        let itemsLength = response.data.length
+                        let probability = 100/itemsLength
+                        let records = []
+                        let totalProb = 0
+                        response.data.map((item) => {
+                            let data = {
+                                id: item.id,
+                                name: item.name,
+                                value: item.rate,
+                                bgColor: item.bg_color,
+                                color: item.color,
+                                probability: probability,
+                                weight: 1
+                            }
+                            records.push(data)
+                        })
+                        records.map((rec) => {
+                            totalProb += rec.probability
+                        })
+                        if(totalProb !== 100){
+                            let dif = (totalProb - 100)
+                            if(dif > 0){
+
+                                let max = records.reduce((prev, current) => {
+                                    return (prev.value > current.value) ? prev : current
+                                })
+                                let index = this.getItemByIndexId(records, max.id)
+                                console.log('records big', records)
+                                console.log('index big', index)
+                                records[index] = {
+                                    id: records[index].id,
+                                    name: records[index].name,
+                                    value: records[index].value,
+                                    bgColor: records[index].bgColor,
+                                    color: records[index].color,
+                                    probability: (records[index].probability - dif),
+                                    weight: 1
+                                }
+                            }
+                            if(dif < 0){
+                                let max = records.reduce((prev, current) => {
+                                    return (prev.value < current.value) ? prev : current
+                                })
+                                let index = this.getItemByIndexId(records, max.id)
+                                console.log('records small', records)
+                                console.log('index small', index)
+                                records[index] = {
+                                    id: records[index].id,
+                                    name: records[index].name,
+                                    value: records[index].value,
+                                    bgColor: records[index].bgColor,
+                                    color: records[index].color,
+                                    probability: (records[index].probability + dif),
+                                    weight: 1
+                                }
+                            }
+
+                        }
+                        let ddd = 0
+                            records.map((rec) => {
+                                ddd += rec.probability
+                        })
+                        console.log('new total', ddd)
+
+                        this.discountPrices = records
+                    } else {
+                        this.discountPrices = this.prizes
+                    }
+                })
+                .catch((error) => {})
+        },
+        getItemByIndexId(items, id){
+            let data = null
+            items.map((item, index) => {
+                if(item.id === id){
+                    data = index
+                }
+            })
+            return data
+        }
+    },
+    created() {
+        this.getDiscountPrices()
     }
 }
 </script>

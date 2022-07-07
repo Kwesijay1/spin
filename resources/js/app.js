@@ -72,6 +72,7 @@ Vue.filter('shortenText', function (text, maxLength) {
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('discount-component', require('./components/DiscountComponent.vue').default);
+Vue.component('dash-component', require('./components/DashboardComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
