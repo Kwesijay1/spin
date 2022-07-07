@@ -11,14 +11,19 @@
                 <li class="nav-item"><a class="nav-link" href="{{url('/')}}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{route('home')}}">Dashboard</a></li>
                 @auth()
-                    <li>
-                        <a class="nav-link" href="" onclick="preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                            Logout</a>
+{{--                    <li>--}}
+{{--                        <a class="nav-link" href="" onclick="preventDefault();--}}
+{{--                                                     document.getElementById('logout-form').submit();">--}}
+{{--                            Logout</a>--}}
 
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
+{{--                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">--}}
+{{--                            @csrf--}}
+{{--                        </form>--}}
+{{--                    </li>--}}
+                    <logout-component
+                        logout-url="{{route('logout')}}"
+                        csrf_token="{{csrf_token()}}"
+                    ></logout-component>
                 @endauth
             </ul>
         </div>
