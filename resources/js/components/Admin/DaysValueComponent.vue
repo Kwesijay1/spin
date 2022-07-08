@@ -100,6 +100,24 @@
                             ></v-text-field>
                         </v-col>
                     </v-row>
+                    <v-row class="pa-0 m-0">
+                        <v-col cols="12" md="12">
+                            <v-autocomplete
+                                v-model="discountForm.discount_list_id"
+                                :items="discountList"
+                                item-text="name"
+                                item-value="id"
+                                filled rounded
+                                dense flat
+                                :clearable="true"
+                                class="fields"
+                                id="discount_list_id"
+                                label="Select Discount"
+                                aria-required=""
+                            >
+                            </v-autocomplete>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions class="d-flex justify-content-end text-right">
@@ -184,8 +202,10 @@ export default {
     data(){
         return{
             daysValue: [],
+            discountList: [],
             discountForm: new Form({
                 id: null,
+                discount_list_id: null,
                 day: '',
                 value: null,
             }),
@@ -193,6 +213,7 @@ export default {
                 {text: 'ID', value: 'id', sortable: true},
                 {text: 'Day Of The Week', value: 'day', sortable: true},
                 {text: 'Value', value: 'value', sortable: true},
+                {text: 'Discount', value: 'discount_list.name'},
                 {text: 'Action', value: 'actions'},
             ],
             ...validation,
@@ -216,9 +237,18 @@ export default {
                 .catch((error) => {
                 })
         },
+        getDiscountList(){
+            axios.get('/discount-list')
+                .then((response) => {
+                    this.discountList = response.data
+                })
+                .catch((error) => {
+                })
+        },
         editItem(item){
             let data = {
                 id: item.id,
+                discount_list_id: item.discount_list_id,
                 day: item.day,
                 value: item.value.toString()
             }
@@ -313,6 +343,7 @@ export default {
     },
     created() {
         this.getDaysValue()
+        this.getDiscountList()
     }
 }
 </script>
