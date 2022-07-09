@@ -196,7 +196,7 @@ export default {
                     value: 10, //* Prize value, return value after spinning
                     bgColor: '#45ace9', // Background color (no need for this parameter when type is image)
                     color: '#ffffff', // Font color (this parameter is not required when type is image)
-                    probability: 20, //* Probability, up to 4 decimal places (the sum of the probabilities of all prizes
+                    probability: 100, //* Probability, up to 4 decimal places (the sum of the probabilities of all prizes
                     weight: 1 // Weight, if useWeight is true, the probability is calculated by weight (weight must be an integer), so probability is invalid
                 },
                 {
@@ -205,7 +205,7 @@ export default {
                     value: 20,
                     bgColor: '#dd3832',
                     color: '#ffffff',
-                    probability: 20,
+                    probability: 0,
                     weight: 1
                 },
                 {
@@ -214,7 +214,7 @@ export default {
                     value: 30,
                     bgColor: '#fef151',
                     color: '#ffffff',
-                    probability: 20,
+                    probability: 0,
                     weight: 1
                 },
                 {
@@ -223,7 +223,7 @@ export default {
                     value: 40,
                     bgColor: '#b0fe51',
                     color: '#ffffff',
-                    probability: 20,
+                    probability: 0,
                     weight: 1
                 },
                 {
@@ -232,7 +232,7 @@ export default {
                     value: 50,
                     bgColor: '#de51fe',
                     color: '#ffffff',
-                    probability: 20,
+                    probability: 0,
                     weight: 1
                 },
             ],
@@ -269,6 +269,7 @@ export default {
                     .then((response) => {
                         if(response.data.canSpin === 'true'){
                             //User qualifies to Spin
+                            this.discountPrices = response.data.discountList
                             this.spinnerDialog = false
                             this.spinnerComDialog = true
                         } else {
@@ -296,6 +297,7 @@ export default {
         },
         onRotateEnd(prize) {
             this.spinForm.discount_amount = prize.value
+            console.log(prize)
 
             axios.post('/discount-generator/store', this.spinForm)
                 .then((response) => {
@@ -420,7 +422,8 @@ export default {
         }
     },
     created() {
-        this.getDiscountPrices()
+        //this.getDiscountPrices()
+        this.discountPrices = this.prizes
     }
 }
 </script>

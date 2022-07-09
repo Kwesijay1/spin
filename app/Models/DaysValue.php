@@ -9,5 +9,11 @@ class DaysValue extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['day', 'value'];
+    protected $fillable = ['day', 'value', 'discount_list_id'];
+
+    protected $with = ['discountList'];
+
+    public function discountList(){
+        return $this->belongsTo(DiscountList::class);
+    }
 }
