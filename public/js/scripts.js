@@ -10,7 +10,7 @@ var __webpack_exports__ = {};
 */
 //
 // Scripts
-// 
+//
 window.addEventListener('DOMContentLoaded', function (event) {
   // Navbar shrink function
   var navbarShrink = function navbarShrink() {
@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', function (event) {
     } else {
       navbarCollapsible.classList.add('navbar-shrink');
     }
-  }; // Shrink the navbar 
+  }; // Shrink the navbar
 
 
   navbarShrink(); // Shrink the navbar when page is scrolled
