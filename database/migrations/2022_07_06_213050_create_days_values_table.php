@@ -17,6 +17,8 @@ class CreateDaysValuesTable extends Migration
             $table->id();
             $table->string('day')->unique();
             $table->integer('value');
+            $table->unsignedBigInteger('matching_discount_id')->nullable();
+            $table->unsignedBigInteger('opposite_discount_id')->nullable();
             $table->timestamps();
         });
     }

@@ -103,7 +103,7 @@
                     <v-row class="pa-0 m-0">
                         <v-col cols="12" md="12">
                             <v-autocomplete
-                                v-model="discountForm.discount_list_id"
+                                v-model="discountForm.matching_discount_id"
                                 :items="discountList"
                                 item-text="name"
                                 item-value="id"
@@ -111,8 +111,26 @@
                                 dense flat
                                 :clearable="true"
                                 class="fields"
-                                id="discount_list_id"
-                                label="Select Discount"
+                                id="matching_discount_id"
+                                label="Select Matching Discount"
+                                aria-required=""
+                            >
+                            </v-autocomplete>
+                        </v-col>
+                    </v-row>
+                    <v-row class="pa-0 m-0">
+                        <v-col cols="12" md="12">
+                            <v-autocomplete
+                                v-model="discountForm.opposite_discount_id"
+                                :items="discountList"
+                                item-text="name"
+                                item-value="id"
+                                filled rounded
+                                dense flat
+                                :clearable="true"
+                                class="fields"
+                                id="opposite_discount_id"
+                                label="Select Opposite Discount"
                                 aria-required=""
                             >
                             </v-autocomplete>
@@ -205,7 +223,8 @@ export default {
             discountList: [],
             discountForm: new Form({
                 id: null,
-                discount_list_id: null,
+                matching_discount_id: null,
+                opposite_discount_id: null,
                 day: '',
                 value: null,
             }),
@@ -213,7 +232,8 @@ export default {
                 {text: 'ID', value: 'id', sortable: true},
                 {text: 'Day Of The Week', value: 'day', sortable: true},
                 {text: 'Value', value: 'value', sortable: true},
-                {text: 'Discount', value: 'discount_list.name'},
+                {text: 'Matching Discount', value: 'matching_discount.name'},
+                {text: 'Opposite Discount', value: 'opposite_discount.name'},
                 {text: 'Action', value: 'actions'},
             ],
             ...validation,
@@ -248,7 +268,8 @@ export default {
         editItem(item){
             let data = {
                 id: item.id,
-                discount_list_id: item.discount_list_id,
+                matching_discount_id: item.matching_discount_id,
+                opposite_discount_id: item.opposite_discount_id,
                 day: item.day,
                 value: item.value.toString()
             }

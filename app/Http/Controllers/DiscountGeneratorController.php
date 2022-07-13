@@ -124,26 +124,35 @@ class DiscountGeneratorController extends Controller
                 }
                 $dayNumber = $day->value;
                 $lastTwoDigits = (int)substr($request->phone_number, -2);
+                $discountId = null;
                 if(($dayNumber %2 === 0) === ($lastTwoDigits %2 === 0)){
-                    if($day->discountList=== null){
+                    if($day->matchingDiscount === null){
                         return response()->json(['alertType' => 'info', 'message' => 'Sorry! No discount available today, Kindly try again tomorrow. Thank You!', 'canSpin' => 'false', 'day' => $day]);
                     }
                     //won
-                    $discounts = DiscountList::all()->collect();
-                    $discounts->map(function ($discount) use ($day){
-                        if($discount->id === $day->discount_list_id){
-                           $discount->probability = 100;
-                        } else {
-                            $discount->probability = 0;
-                        }
-                        $discount->weight = 1;
-                        $discount->bgColor = $discount->bg_color;
-                        $discount->value = $discount->rate;
-                    });
-                    return response()->json(['alertType' => 'success', 'message' => 'User can spin ', 'canSpin' => 'true', 'discountList' => $discounts]);
+                    $discountId = $day->matching_discount_id;
+
                 } else{
-                    return response()->json(['alertType' => 'info', 'message' => 'Sorry! You do not qualify for a discount today, Kindly try again tomorrow. Thank You!', 'canSpin' => 'false']);
+                    if($day->oppositeDiscount === null){
+                        return response()->json(['alertType' => 'info', 'message' => 'Sorry! No discount available today, Kindly try again tomorrow. Thank You!', 'canSpin' => 'false', 'day' => $day]);
+                    }
+                    //won
+                    $discountId = $day->opposite_discount_id;
                 }
+
+                $discounts = DiscountList::all()->collect();
+                $discounts->map(function ($discount) use ($discountId){
+                    if($discount->id === $discountId){
+                        $discount->probability = 100;
+                    } else {
+                        $discount->probability = 0;
+                    }
+                    $discount->weight = 1;
+                    $discount->bgColor = $discount->bg_color;
+                    $discount->value = $discount->rate;
+                });
+                return response()->json(['alertType' => 'success', 'message' => 'User can spin ', 'canSpin' => 'true', 'discountList' => $discounts]);
+
 
             } else{
                 //user has spin already today
