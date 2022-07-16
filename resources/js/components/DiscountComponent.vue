@@ -81,7 +81,7 @@
     >
         <v-card >
             <v-card-title class="mb-2 d-flex justify-content-center text-center text-primary">
-                Spinner
+                Tula secret
             </v-card-title>
             <v-divider></v-divider>
 
